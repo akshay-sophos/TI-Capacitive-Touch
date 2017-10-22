@@ -35,23 +35,20 @@ int key(struct Element * keyPressed)
                      _delay_cycles(100000);
                      P1OUT = BIT4;
                      _delay_cycles(100000);
-                     prev = keyPressed;
                      return 4;
                  }
-
-                 else if(prev ==  &right_element)
+                  if(prev ==  &right_element)
                 {
                     P1OUT = BIT3 | (~BIT5) &(~BIT0);
                     _delay_cycles(100000);
                     P1OUT = BIT3 | (~BIT4) &(~BIT0);
                     _delay_cycles(100000);
-                    prev = keyPressed;
                     return 5;
                 }
-                 else if(prev == keyPressed)
-                  return 0;
 
 
+                prev = keyPressed;
+                return 0;
             }
             // Down Element
             else if(keyPressed == &down_element)
@@ -63,23 +60,21 @@ int key(struct Element * keyPressed)
                     _delay_cycles(100000);
                     P1OUT = BIT7;
                     _delay_cycles(100000);
-                    prev = keyPressed;
                     return 7;
-
                 }
-                else if(prev ==  &right_element)
+                if(prev ==  &right_element)
                 {
                       P1OUT = BIT3 | (~BIT6)&(~BIT0);
                       _delay_cycles(100000);
                       P1OUT = BIT3 | (~BIT7)&(~BIT0);
                      _delay_cycles(100000);
-                     prev = keyPressed;
                      return 2;
                 }
-                else if(prev == keyPressed)
-                                 return 0;
 
 
+
+                prev = keyPressed;
+                return 0;
             }
             // Left Element
             else if(keyPressed == &left_element)
@@ -91,22 +86,20 @@ int key(struct Element * keyPressed)
                       _delay_cycles(100000);
                       P1OUT = BIT6;
                      _delay_cycles(100000);
-
-                     prev = keyPressed;
                      return 3;
                 }
-                else if(prev ==  &up_element)
+                if(prev ==  &up_element)
                 {
                       P1OUT = BIT4;
                       _delay_cycles(100000);
                       P1OUT = BIT5;
                      _delay_cycles(100000);
-                     prev = keyPressed;
                      return 8;
                 }
-                else if(prev == keyPressed)
-                                 return 0;
 
+
+                prev = keyPressed;
+                return 0;
             }
             // Right Element
             else if(keyPressed == &right_element)
@@ -118,34 +111,33 @@ int key(struct Element * keyPressed)
                       _delay_cycles(100000);
                       P1OUT = BIT3 | (~BIT6)&(~BIT0);
                      _delay_cycles(100000);
-                     prev = keyPressed;
                      return 6;
                 }
-                else  if(prev ==  &up_element)
+                if(prev ==  &up_element)
                 {
                       P1OUT = BIT3 | (~BIT4) &(~BIT0);
                       _delay_cycles(100000);
                       P1OUT = BIT3 | (~BIT5)&(~BIT0);
                      _delay_cycles(100000);
-                     prev = keyPressed;
                      return 1;
                 }
-                else if(prev == keyPressed)
-                                 return 0;
 
+
+                prev = keyPressed;
+
+                 return 0;
             }
             // Middle Element
             else if(keyPressed == &middle_element)
             {
                 P1OUT = BIT0;              // Turn on center LED
                 _delay_cycles(100000);
-               // prev = keyPressed;
+                prev = keyPressed;
                 return 9;
             }
               }
           else
           {
-
               P1OUT = 0;
               prev = 0;
               return 0;
@@ -178,16 +170,18 @@ void main(void)
   while (1)
   {
     keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);
-    int a[4],M,i;int b[4] = {1,2,3,4};
+    int a[4],i;int  m, b[4] = {1,2,3,4};
     if(key(keyPressed) == 9 )
     {
         for(i = 0;i<4;i++)
         {
             prev = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);
-            _delay_cycles(100000);
+
             keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);
-            M = key(keyPressed) ;
-            if(M== 0)
+            m=key(keyPressed);
+            P1OUT = 0;
+           // _delay_cycles(100000);
+            if(m == 0)
             {
                 i--;
             }
@@ -196,19 +190,18 @@ void main(void)
               /* if(i == 0)
                    key(keyPressed);
                keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);*/
-               a[i] =  M;
-
+               a[i] =  m;
             }
         }
-    for(i = 0;i<4 && a[i] != 0;i++)
+    for(i = 0;i<4;i++)
         if(a[i] != b[i])
         {
-            P1OUT = BIT1;
+            P1OUT = BIT2;
             while(1);
         }
         else
         {
-            P1OUT = BIT2;
+            P1OUT = BIT1;
             while(1);
         }
 
@@ -234,7 +227,6 @@ __interrupt void ISR_Timer0_A0(void)
   TA0CCTL0 &= ~(CCIE);
   __bic_SR_register_on_exit(LPM3_bits+GIE);
 }
-
 #pragma vector=PORT2_VECTOR,             \
   PORT1_VECTOR,                          \
   TIMER0_A1_VECTOR,                      \
