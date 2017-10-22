@@ -7,19 +7,6 @@ struct Element * prev;                  // For remembering previous keypressed
 unsigned int wheelCnt[5];               // Becuase the Wheel is composed of five elements
 #endif
 
-// Sleep Function
-// Configures Timer A to run off ACLK, count in UP mode, places the CPU in LPM3 
-// and enables the interrupt vector to jump to ISR upon timeout 
-/*void sleep(unsigned int time)
-{
-    TA0CCR0 = time;
-    TA0CTL = TASSEL_1+MC_1+TACLR;
-    TA0CCTL0 &= ~CCIFG;
-    TA0CCTL0 |= CCIE; 
-    __bis_SR_register(LPM3_bits+GIE);
-    __no_operation();
-}*/
-
 int key(struct Element * keyPressed)
 {
     // If a button has been touched, then take some action
@@ -53,7 +40,7 @@ int key(struct Element * keyPressed)
             // Down Element
             else if(keyPressed == &down_element)
             {
-                //P1OUT |= BIT0;              // Turn on center LED
+
                 if(prev ==  &left_element)
                 {
                     P1OUT = BIT6;
@@ -170,7 +157,7 @@ void main(void)
   while (1)
   {
     keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);
-    int a[4],i;int  m, b[4] = {1,2,3,4};
+    int a[4],i;int  m, b[4] = {1,3,1,2};
     if(key(keyPressed) == 9 )
     {
         for(i = 0;i<4;i++)
@@ -180,16 +167,13 @@ void main(void)
             keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);
             m=key(keyPressed);
             P1OUT = 0;
-           // _delay_cycles(100000);
+
             if(m == 0)
             {
                 i--;
             }
             else if(prev != 0)
             {
-              /* if(i == 0)
-                   key(keyPressed);
-               keyPressed = (struct Element *)TI_CAPT_Buttons(&wheel_buttons);*/
                a[i] =  m;
             }
         }
@@ -207,34 +191,7 @@ void main(void)
 
     }
 
-
-
-
-    // Put the MSP430 into LPM3 for a certain DELAY period
-    //sleep(DELAY);
-
-
   }
 } // End Main
 
-/******************************************************************************/
-// Timer0_A0 Interrupt Service Routine: Disables the timer and exists LPM3  
-/******************************************************************************
-#pragma vector=TIMER0_A0_VECTOR
-__interrupt void ISR_Timer0_A0(void)
-{
-  TA0CTL &= ~(MC_1);
-  TA0CCTL0 &= ~(CCIE);
-  __bic_SR_register_on_exit(LPM3_bits+GIE);
-}
-#pragma vector=PORT2_VECTOR,             \
-  PORT1_VECTOR,                          \
-  TIMER0_A1_VECTOR,                      \
-  USI_VECTOR,                            \
-  NMI_VECTOR,COMPARATORA_VECTOR,         \
-  ADC10_VECTOR
-__interrupt void ISR_trap(void)
-{
-  // the following will cause an access violation which results in a PUC reset
-  WDTCTL = 0;
-}*/
+
